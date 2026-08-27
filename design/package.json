@@ -1,0 +1,8 @@
+{
+  "name": "marsonline-business-plan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "株式会社Mars Online 事業計画書 2025 — 企画書スタイルの Word 文書ジェネレーター",
+  "scripts": { "build": "node build.js" },
+  "dependencies": { "docx": "^9.7.1" }
+}
