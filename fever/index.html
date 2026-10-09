@@ -4,12 +4,11 @@
 <meta name="theme-color" content="#2f8f83">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="退烧记录">
+<meta name="apple-mobile-web-app-title" content="Fever Log">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
-<title>退烧记录本</title>
+<title>退烧记录本 · 発熱記録 · 열 기록</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap">
 <style>
@@ -20,7 +19,10 @@
   --chip:#e8eeec;
   --f-num:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
   --f-body:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
+:root:lang(ja){--f-body:system-ui,-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif}
+:root:lang(ko){--f-body:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121a1a; --card:#1a2424; --ink:#e4ecea; --mute:#91a19f; --line:#2b3837;
   --ok:#4fb8a9; --warm:#e8a64a; --hot:#ec7660; --vhot:#f0607a; --med:#8f97ef; --chip:#243130; color-scheme:dark}}
@@ -28,12 +30,17 @@
   --bg:#121a1a; --card:#1a2424; --ink:#e4ecea; --mute:#91a19f; --line:#2b3837;
   --ok:#4fb8a9; --warm:#e8a64a; --hot:#ec7660; --vhot:#f0607a; --med:#8f97ef; --chip:#243130; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:16px 48px}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:16px 48px}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 h1{font-family:var(--f-num);font-size:22px;margin:0;letter-spacing:.01em}
 h2{font-size:13px;margin:0;color:var(--mute);font-weight:600;letter-spacing:.08em}
-.kids{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.lang button{border:none;background:none;padding:5px 11px;cursor:pointer;font-size:13px;min-height:32px}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.kids{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 button,select,input,textarea{font:inherit;color:inherit}
 .pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;cursor:pointer}
 .pill[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -62,7 +69,7 @@ svg text{fill:var(--mute);font-size:11px;font-family:var(--f-body)}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row>label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute);flex:1 1 140px;min-width:0}
-input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0;font-size:16px}
 textarea{resize:vertical;min-height:60px}
 .stepper{display:flex;align-items:center;gap:10px}
 .stepper button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:22px;cursor:pointer}
@@ -77,7 +84,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .timeline li{display:grid;grid-template-columns:52px 14px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
 .timeline li:first-child{border-top:none}
 .timeline .t{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:14px}
-.timeline .d{font-size:11px;color:var(--mute);display:block}
 .dot{width:10px;height:10px;border-radius:50%;margin-top:6px}
 .timeline .body{min-width:0;overflow-wrap:anywhere}
 .del{background:none;border:none;color:var(--mute);cursor:pointer;font-size:13px;padding:2px 6px}
@@ -96,132 +102,126 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .qt{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 14px;cursor:pointer;font-size:15px;min-height:44px}
 .qt[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .tp-fine{display:grid;grid-template-columns:auto auto 1fr auto auto;gap:6px;align-items:center}
-.tp-fine input{font-size:16px;min-height:44px}
+.tp-fine input{min-height:44px}
 .adj{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:44px;padding:0 10px;cursor:pointer;font-size:14px;white-space:nowrap}
 @media (max-width:460px){.tp-fine{grid-template-columns:1fr 1fr 1fr 1fr}.tp-fine input{grid-column:1/-1;order:-1}}
-input,select{font-size:16px}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px}
-.confirm{display:flex;gap:6px;align-items:center;font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;max-width:90vw;text-align:center}
+.confirm{display:flex;gap:6px;align-items:center;font-size:13px;flex-wrap:wrap}
 .sync{font-size:12px;color:var(--mute)}
 @media (max-width:420px){.big{font-size:46px}.status{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-
 </head><body>
 <div class="wrap">
   <header>
     <div>
-      <h1>退烧记录本</h1>
-      <div class="sync" id="sync">记录保存在这台手机上</div>
+      <h1 data-i="appName"></h1>
+      <div class="sync" data-i="savedHere"></div>
     </div>
-    <div class="kids" id="kids"></div>
+    <div class="hright">
+      <div class="lang" id="langSw" role="group" aria-label="Language">
+        <button data-l="zh">中文</button><button data-l="ja">日本語</button><button data-l="ko">한국어</button>
+      </div>
+      <div class="kids" id="kids"></div>
+    </div>
   </header>
 
   <div id="addKid" class="card" hidden>
-    <h2>添加孩子</h2>
+    <h2 data-i="addChild"></h2>
     <div class="row">
-      <label>名字/昵称<input id="kidName" placeholder="例如：小米"></label>
-      <label>出生日期（用于月龄提示）<input id="kidBirth" type="date"></label>
+      <label><span data-i="childName"></span><input id="kidName"></label>
+      <label><span data-i="birth"></span><input id="kidBirth" type="date"></label>
     </div>
-    <div class="row"><button class="primary" id="saveKid">保存</button><button class="ghost" id="cancelKid">取消</button></div>
+    <div class="row"><button class="primary" id="saveKid" data-i="save"></button><button class="ghost" id="cancelKid" data-i="cancel"></button></div>
   </div>
 
   <section class="card" id="statusCard"></section>
 
   <section class="card">
-    <div class="row" style="justify-content:space-between"><h2>体温曲线</h2>
+    <div class="row" style="justify-content:space-between"><h2 data-i="chartTitle"></h2>
       <div class="tabs" role="tablist" id="range">
-        <button class="tab" data-h="24" role="tab">24小时</button>
-        <button class="tab" data-h="72" role="tab" aria-selected="true">3天</button>
-        <button class="tab" data-h="168" role="tab">7天</button>
+        <button class="tab" data-h="24" role="tab" data-i="r24"></button>
+        <button class="tab" data-h="72" role="tab" aria-selected="true" data-i="r72"></button>
+        <button class="tab" data-h="168" role="tab" data-i="r168"></button>
       </div></div>
-    <div class="chartbox"><svg id="chart" viewBox="0 0 600 240" width="100%" role="img" aria-label="体温曲线"></svg></div>
-    <div class="fine">● 体温　▲ 用药　虚线：37.5 / 38.5 / 39.5 ℃</div>
+    <div class="chartbox"><svg id="chart" viewBox="0 0 600 240" width="100%" role="img"></svg></div>
+    <div class="fine" data-i="legend"></div>
   </section>
 
   <section class="card">
     <div class="tabs" role="tablist" id="entryTabs">
-      <button class="tab" data-k="temp" role="tab" aria-selected="true">🌡 体温</button>
-      <button class="tab" data-k="med" role="tab">💊 用药</button>
-      <button class="tab" data-k="sym" role="tab">症状/备注</button>
+      <button class="tab" data-k="temp" role="tab" aria-selected="true" data-i="tabTemp"></button>
+      <button class="tab" data-k="med" role="tab" data-i="tabMed"></button>
+      <button class="tab" data-k="sym" role="tab" data-i="tabSym"></button>
     </div>
 
     <div id="f-temp" class="row" style="flex-direction:column;align-items:stretch">
       <div class="stepper" style="justify-content:center">
-        <button id="tMinus" aria-label="降低0.1度">−</button>
+        <button id="tMinus" aria-label="-0.1">−</button>
         <output id="tVal">38.5℃</output>
-        <button id="tPlus" aria-label="升高0.1度">+</button>
+        <button id="tPlus" aria-label="+0.1">+</button>
       </div>
-      <div class="tgrid" id="tInt" aria-label="整数位"></div>
-      <div class="tgrid dec" id="tDec" aria-label="小数位"></div>
-      <label class="fine" style="display:flex;flex-direction:column;gap:4px">或直接输入数字（如 385 = 38.5℃）
+      <div class="tgrid" id="tInt"></div>
+      <div class="tgrid dec" id="tDec"></div>
+      <label class="fine" style="display:flex;flex-direction:column;gap:4px"><span data-i="typeHint"></span>
         <input id="tType" inputmode="decimal" placeholder="385" autocomplete="off"></label>
       <div class="row">
-        <label>测量部位<select id="site"><option>腋下</option><option>耳温</option><option>额温</option><option>口腔</option><option>肛温</option></select></label>
+        <label><span data-i="site"></span><select id="site"></select></label>
       </div>
     </div>
 
     <div id="f-med" hidden>
       <div class="row">
-        <label>药名<select id="medName">
-          <option>对乙酰氨基酚</option><option>布洛芬</option><option>其他</option></select></label>
-        <label id="medOtherWrap" hidden>其他药名<input id="medOther" placeholder="药名"></label>
-        <label>剂量<input id="dose" placeholder="例如 5ml / 1包"></label>
+        <label><span data-i="medName"></span><select id="medName"></select></label>
+        <label id="medOtherWrap" hidden><span data-i="medOtherLbl"></span><input id="medOther"></label>
+        <label><span data-i="dose"></span><input id="dose"></label>
       </div>
     </div>
 
-    <div id="f-sym" hidden style="display:flex;flex-direction:column;gap:10px">
+    <div id="f-sym" hidden style="flex-direction:column;gap:10px">
       <div class="chips" id="symChips"></div>
-      <label class="fine" style="display:flex;flex-direction:column;gap:4px">备注（吃奶/喝水/尿量/精神状态等）<textarea id="note"></textarea></label>
+      <label class="fine" style="display:flex;flex-direction:column;gap:4px"><span data-i="noteLbl"></span><textarea id="note"></textarea></label>
     </div>
 
     <div class="timepick">
-      <div class="tp-head"><span class="fine">时间</span><b id="whenShow">现在</b></div>
+      <div class="tp-head"><span class="fine" data-i="time"></span><b id="whenShow"></b></div>
       <div class="chips" id="quickTime">
-        <button class="qt" data-m="0" aria-pressed="true">现在</button>
-        <button class="qt" data-m="5">5分钟前</button>
-        <button class="qt" data-m="15">15分钟前</button>
-        <button class="qt" data-m="30">半小时前</button>
-        <button class="qt" data-m="60">1小时前</button>
-        <button class="qt" data-m="-1">其他时间</button>
+        <button class="qt" data-m="0" aria-pressed="true" data-i="now"></button>
+        <button class="qt" data-m="5" data-i="ago5"></button>
+        <button class="qt" data-m="15" data-i="ago15"></button>
+        <button class="qt" data-m="30" data-i="ago30"></button>
+        <button class="qt" data-m="60" data-i="ago60"></button>
+        <button class="qt" data-m="-1" data-i="otherTime"></button>
       </div>
       <div class="tp-fine" id="fineAdj" hidden>
-        <button class="adj" data-d="-30">−30分</button>
-        <button class="adj" data-d="-5">−5分</button>
-        <input id="when" type="datetime-local" aria-label="选择时间">
-        <button class="adj" data-d="5">+5分</button>
-        <button class="adj" data-d="30">+30分</button>
+        <button class="adj" data-d="-30"></button>
+        <button class="adj" data-d="-5"></button>
+        <input id="when" type="datetime-local">
+        <button class="adj" data-d="5"></button>
+        <button class="adj" data-d="30"></button>
       </div>
     </div>
-    <button class="primary" id="saveEntry">记录体温</button>
+    <button class="primary" id="saveEntry"></button>
   </section>
 
   <section class="card">
-    <div class="row" style="justify-content:space-between"><h2>记录明细</h2><button class="ghost" id="copyBtn">复制给医生的摘要</button></div>
+    <div class="row" style="justify-content:space-between"><h2 data-i="records"></h2><button class="ghost" id="copyBtn" data-i="copySum"></button></div>
     <textarea id="summaryFallback" hidden readonly style="min-height:140px"></textarea>
     <ul class="timeline" id="timeline"></ul>
   </section>
 
   <section class="card">
-    <h2>备份与换手机</h2>
-    <div class="fine">记录只保存在这台手机的浏览器里。换手机或清理浏览器前，先导出备份文件，再在新手机上导入。</div>
-    <div class="row"><button class="ghost" id="exportBtn">导出备份</button>
-      <label class="ghost" style="flex:0 0 auto;cursor:pointer;color:var(--ink);font-size:15px">导入备份<input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
-    <div class="fine" id="installTip">加到主屏幕后像 App 一样使用：iPhone 用 Safari 点「分享」→「添加到主屏幕」；安卓用 Chrome 点菜单 →「添加到主屏幕/安装应用」。</div>
+    <h2 data-i="backupTitle"></h2>
+    <div class="fine" data-i="backupText"></div>
+    <div class="row"><button class="ghost" id="exportBtn" data-i="export"></button>
+      <label class="ghost" style="flex:0 0 auto;cursor:pointer;color:var(--ink);font-size:15px"><span data-i="import"></span><input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
+    <div class="fine" data-i="installTip"></div>
   </section>
 
   <section class="card">
-    <h2>需要尽快就医的情况</h2>
-    <ul style="margin:0;padding-left:18px;font-size:14px">
-      <li>3个月以下宝宝体温 ≥ 38℃</li>
-      <li>体温 ≥ 40℃，或退烧药后仍持续高烧</li>
-      <li>发烧超过 3 天（72小时）</li>
-      <li>抽搐、意识不清、精神很差叫不醒</li>
-      <li>呼吸急促/费力、嘴唇发紫</li>
-      <li>明显脱水：尿很少、哭时无泪、嘴唇干</li>
-      <li>按压不褪色的皮疹、颈部僵硬</li>
-    </ul>
-    <div class="fine">本工具只做记录，不替代医生判断。用药剂量与间隔请按说明书或医嘱。</div>
+    <h2 data-i="redTitle"></h2>
+    <ul style="margin:0;padding-left:18px;font-size:14px" id="redList"></ul>
+    <div class="fine" data-i="disclaimer"></div>
   </section>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -229,11 +229,114 @@ input,select{font-size:16px}
 <script>
 (function(){
 const $=s=>document.querySelector(s);
-const SYMS=["咳嗽","流鼻涕","喉咙痛","呕吐","腹泻","皮疹","精神差","食欲差","喝水少","尿少","寒战","手脚冰凉","抽搐","呼吸急促"];
-const MED_RULE={"对乙酰氨基酚":{gap:4,max:4},"布洛芬":{gap:6,max:4}};
-const LS="fever-log-v1";
-let state={kids:[],entries:[]}, cur=null, kind="temp", temp=38.5, rangeH=72, db=null, syms=new Set();
 
+// ================= i18n =================
+// Records store language-neutral keys (site / med / symptom), so switching language relabels old records too.
+const SITES=["ax","ear","fore","oral","rect"];
+const MEDS=["apap","ibu","other"];
+const SYMS=["cough","runny","throat","vomit","diarrhea","rash","lethargic","appetite","drinkLess","urineLess","chills","coldLimbs","seizure","breath"];
+const DANGER=["seizure","breath","lethargic","urineLess"];
+const MED_RULE={apap:{gap:4,max:4},ibu:{gap:6,max:4}};
+
+const I={
+zh:{lang:"zh-CN",appName:"退烧记录本",savedHere:"记录保存在这台手机上",addChild:"添加孩子",childName:"名字/昵称",childPh:"例如：小米",birth:"出生日期（用于月龄提示）",save:"保存",cancel:"取消",addKidBtn:"+ 孩子",
+ chartTitle:"体温曲线",r24:"24小时",r72:"3天",r168:"7天",legend:"● 体温　▲ 用药　虚线：37.5 / 38.5 / 39.5 ℃",noTempRange:"这段时间没有体温记录",
+ tabTemp:"🌡 体温",tabMed:"💊 用药",tabSym:"症状/备注",typeHint:"或直接输入数字（如 385 = 38.5℃）",site:"测量部位",
+ sites:{ax:"腋下",ear:"耳温",fore:"额温",oral:"口腔",rect:"肛温"},
+ medName:"药名",medOtherLbl:"其他药名",dose:"剂量",dosePh:"例如 5ml / 1包",meds:{apap:"对乙酰氨基酚",ibu:"布洛芬",other:"其他"},
+ syms:{cough:"咳嗽",runny:"流鼻涕",throat:"喉咙痛",vomit:"呕吐",diarrhea:"腹泻",rash:"皮疹",lethargic:"精神差",appetite:"食欲差",drinkLess:"喝水少",urineLess:"尿少",chills:"寒战",coldLimbs:"手脚冰凉",seizure:"抽搐",breath:"呼吸急促"},
+ noteLbl:"备注（吃奶/喝水/尿量/精神状态等）",time:"时间",now:"现在",ago5:"5分钟前",ago15:"15分钟前",ago30:"半小时前",ago60:"1小时前",otherTime:"其他时间",min:"分",
+ today:"今天",yesterday:"昨天",saveTemp:"记录体温",saveMed:"记录用药",saveSym:"记录症状",
+ records:"记录明细",copySum:"复制给医生的摘要",noRecords:"暂无记录",del:"删除",confirmDel:"确认删除？",
+ backupTitle:"备份与换手机",backupText:"记录只保存在这台手机的浏览器里。换手机或清理浏览器前，先导出备份文件，再在新手机上导入。",export:"导出备份",import:"导入备份",
+ installTip:"加到主屏幕后像 App 一样使用：iPhone 用 Safari 点「分享」→「添加到主屏幕」；安卓用 Chrome 点菜单 →「添加到主屏幕/安装应用」。",
+ redTitle:"需要尽快就医的情况",red:["3个月以下宝宝体温 ≥ 38℃","体温 ≥ 40℃，或退烧药后仍持续高烧","发烧超过 3 天（72小时）","抽搐、意识不清、精神很差叫不醒","呼吸急促/费力、嘴唇发紫","明显脱水：尿很少、哭时无泪、嘴唇干","按压不褪色的皮疹、颈部僵硬"],
+ disclaimer:"本工具只做记录，不替代医生判断。用药剂量与间隔请按说明书或医嘱。",
+ emptyKid:"先点右上角「+ 孩子」添加一个孩子，再开始记录。",emptyTemp:"还没有体温记录。在下方输入第一次测量的体温。",
+ lv:["正常","低烧","中度发热","高烧"],measuredAt:t=>t+" 测",sinceLast:"距上次测量",feverFor:"本次发烧已持续",maxThis:"本次最高",noFever:"目前无发热记录",
+ attention:"请注意",aInfant:"3个月以下宝宝体温 ≥38℃，建议尽快就医",aHigh:v=>"体温已达 "+v+"℃",a72:"本次发烧已持续超过 72 小时",aSym:s=>"近48小时出现「"+s+"」",
+ medTitle:"用药间隔",medNote:"间隔按常见说明书，以医嘱为准。",lastDose:(d,ago)=>"上次 "+d+"，已过 "+ago,readyNow:"现在可再次使用",nextAt:(t,left)=>"最早 "+t+"（还需 "+left+"）",
+ count24:(c,m,g)=>"24小时内 "+c+"/"+m+" 次 · 间隔≥"+g+"小时",count24n:c=>"24小时内 "+c+" 次",
+ dur:(h,m)=>h?(h+"小时"+(m?m+"分":"")):m+"分钟",
+ sumTitle:n=>n+" 发烧记录",sumAge:m=>"月龄："+m+"个月",sumStart:(d,mx)=>"本次发烧开始："+d+"，最高 "+mx+"℃",sumMed:"用药：",sumSym:"症状：",sep:"、",
+ copied:"已复制",selectCopy:"已选中，请手动复制",needKid:"请先添加孩子",needName:"请填写名字",needSym:"请选择症状或填写备注",saved:t=>"已记录 "+t,
+ exported:"已导出",imported:n=>"已导入 "+n+" 条",badFile:"文件格式不对，请选择导出的备份文件",backupName:"退烧记录备份"},
+
+ja:{lang:"ja",appName:"発熱記録ノート",savedHere:"記録はこのスマホに保存されます",addChild:"子どもを追加",childName:"名前・ニックネーム",childPh:"例：はるくん",birth:"生年月日（月齢の注意表示に使用）",save:"保存",cancel:"キャンセル",addKidBtn:"+ 子ども",
+ chartTitle:"体温グラフ",r24:"24時間",r72:"3日",r168:"7日",legend:"● 体温　▲ 服薬　点線：37.5 / 38.5 / 39.5 ℃",noTempRange:"この期間の体温記録はありません",
+ tabTemp:"🌡 体温",tabMed:"💊 お薬",tabSym:"症状・メモ",typeHint:"数字で直接入力もできます（385 = 38.5℃）",site:"測定部位",
+ sites:{ax:"わき",ear:"耳",fore:"おでこ",oral:"口",rect:"おしり（直腸）"},
+ medName:"薬の名前",medOtherLbl:"その他の薬名",dose:"量",dosePh:"例：5ml / 1包",meds:{apap:"アセトアミノフェン（カロナール等）",ibu:"イブプロフェン",other:"その他"},
+ syms:{cough:"せき",runny:"鼻水",throat:"のどの痛み",vomit:"嘔吐",diarrhea:"下痢",rash:"発疹",lethargic:"ぐったり",appetite:"食欲がない",drinkLess:"水分が取れない",urineLess:"おしっこが少ない",chills:"寒気・震え",coldLimbs:"手足が冷たい",seizure:"けいれん",breath:"呼吸が苦しそう"},
+ noteLbl:"メモ（ミルク・水分・おしっこ・機嫌など）",time:"時間",now:"今",ago5:"5分前",ago15:"15分前",ago30:"30分前",ago60:"1時間前",otherTime:"別の時間",min:"分",
+ today:"今日",yesterday:"昨日",saveTemp:"体温を記録",saveMed:"お薬を記録",saveSym:"症状を記録",
+ records:"記録一覧",copySum:"医師向けの要約をコピー",noRecords:"記録はまだありません",del:"削除",confirmDel:"削除しますか？",
+ backupTitle:"バックアップ・機種変更",backupText:"記録はこのスマホのブラウザだけに保存されます。機種変更やブラウザのデータ削除の前に、バックアップを書き出して新しいスマホで読み込んでください。",export:"バックアップを書き出す",import:"バックアップを読み込む",
+ installTip:"ホーム画面に追加するとアプリのように使えます。iPhone は Safari の「共有」→「ホーム画面に追加」、Android は Chrome のメニュー →「ホーム画面に追加／アプリをインストール」。",
+ redTitle:"早めに受診が必要なサイン",red:["生後3か月未満で 38℃ 以上","40℃ 以上、または解熱剤を使っても高熱が続く","発熱が3日（72時間）以上続く","けいれん、意識がおかしい、ぐったりして起きない","呼吸が速い・苦しそう、唇が紫色","脱水のサイン：おしっこが少ない、泣いても涙が出ない、唇が乾く","押しても消えない発疹、首が硬い"],
+ disclaimer:"このアプリは記録用で、医師の判断に代わるものではありません。薬の量と間隔は添付文書または医師の指示に従ってください。夜間・休日の相談は #8000（小児救急電話相談）へ。",
+ emptyKid:"右上の「+ 子ども」から子どもを追加してから記録を始めてください。",emptyTemp:"まだ体温の記録がありません。下から最初の体温を入力してください。",
+ lv:["平熱","微熱","発熱","高熱"],measuredAt:t=>t+" 測定",sinceLast:"前回の測定から",feverFor:"今回の発熱の経過",maxThis:"今回の最高",noFever:"現在、発熱の記録なし",
+ attention:"注意",aInfant:"生後3か月未満で 38℃ 以上です。早めに受診してください",aHigh:v=>"体温が "+v+"℃ に達しています",a72:"今回の発熱が72時間を超えています",aSym:s=>"48時間以内に「"+s+"」がありました",
+ medTitle:"お薬の間隔",medNote:"間隔は一般的な添付文書の目安です。医師の指示を優先してください。",lastDose:(d,ago)=>"前回 "+d+"（"+ago+"前）",readyNow:"今、次の服用ができます",nextAt:(t,left)=>"次は "+t+" 以降（あと "+left+"）",
+ count24:(c,m,g)=>"24時間で "+c+"/"+m+" 回 · 間隔 "+g+" 時間以上",count24n:c=>"24時間で "+c+" 回",
+ dur:(h,m)=>h?(h+"時間"+(m?m+"分":"")):m+"分",
+ sumTitle:n=>n+" 発熱記録",sumAge:m=>"月齢："+m+"か月",sumStart:(d,mx)=>"今回の発熱開始："+d+"、最高 "+mx+"℃",sumMed:"服薬：",sumSym:"症状：",sep:"、",
+ copied:"コピーしました",selectCopy:"選択しました。手動でコピーしてください",needKid:"先に子どもを追加してください",needName:"名前を入力してください",needSym:"症状を選ぶかメモを入力してください",saved:t=>t+" を記録しました",
+ exported:"書き出しました",imported:n=>n+" 件を読み込みました",badFile:"ファイル形式が違います。書き出したバックアップを選んでください",backupName:"発熱記録バックアップ"},
+
+ko:{lang:"ko",appName:"아이 열 기록",savedHere:"기록은 이 휴대폰에 저장됩니다",addChild:"아이 추가",childName:"이름/별명",childPh:"예: 하은",birth:"생년월일 (개월 수 안내용)",save:"저장",cancel:"취소",addKidBtn:"+ 아이",
+ chartTitle:"체온 그래프",r24:"24시간",r72:"3일",r168:"7일",legend:"● 체온　▲ 투약　점선: 37.5 / 38.5 / 39.5 ℃",noTempRange:"이 기간에는 체온 기록이 없습니다",
+ tabTemp:"🌡 체온",tabMed:"💊 투약",tabSym:"증상/메모",typeHint:"숫자로 바로 입력 가능 (385 = 38.5℃)",site:"측정 부위",
+ sites:{ax:"겨드랑이",ear:"귀",fore:"이마",oral:"입",rect:"항문"},
+ medName:"약 이름",medOtherLbl:"기타 약 이름",dose:"용량",dosePh:"예: 5ml / 1포",meds:{apap:"아세트아미노펜 (타이레놀 등)",ibu:"이부프로펜 (부루펜 등)",other:"기타"},
+ syms:{cough:"기침",runny:"콧물",throat:"목 통증",vomit:"구토",diarrhea:"설사",rash:"발진",lethargic:"처짐/기운 없음",appetite:"식욕 없음",drinkLess:"물을 잘 안 마심",urineLess:"소변 감소",chills:"오한",coldLimbs:"손발이 차가움",seizure:"경련",breath:"호흡 곤란"},
+ noteLbl:"메모 (수유·수분·소변량·컨디션 등)",time:"시간",now:"지금",ago5:"5분 전",ago15:"15분 전",ago30:"30분 전",ago60:"1시간 전",otherTime:"다른 시간",min:"분",
+ today:"오늘",yesterday:"어제",saveTemp:"체온 기록",saveMed:"투약 기록",saveSym:"증상 기록",
+ records:"기록 목록",copySum:"의사용 요약 복사",noRecords:"아직 기록이 없습니다",del:"삭제",confirmDel:"삭제할까요?",
+ backupTitle:"백업 · 휴대폰 변경",backupText:"기록은 이 휴대폰의 브라우저에만 저장됩니다. 휴대폰을 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 내보내고, 새 휴대폰에서 가져오세요.",export:"백업 내보내기",import:"백업 가져오기",
+ installTip:"홈 화면에 추가하면 앱처럼 쓸 수 있습니다. iPhone은 Safari에서 「공유」→「홈 화면에 추가」, Android는 Chrome 메뉴 →「홈 화면에 추가/앱 설치」.",
+ redTitle:"빨리 병원에 가야 하는 경우",red:["생후 3개월 미만 아기가 38℃ 이상","40℃ 이상이거나 해열제를 먹어도 고열이 계속됨","열이 3일(72시간) 이상 계속됨","경련, 의식 저하, 축 처져서 잘 깨지 않음","숨이 빠르거나 힘들어함, 입술이 파래짐","탈수 징후: 소변이 매우 적음, 울어도 눈물이 없음, 입술이 마름","눌러도 없어지지 않는 발진, 목이 뻣뻣함"],
+ disclaimer:"이 앱은 기록용이며 의사의 판단을 대신하지 않습니다. 약의 용량과 간격은 설명서나 의사의 지시를 따르세요.",
+ emptyKid:"오른쪽 위 「+ 아이」를 눌러 아이를 추가한 뒤 기록을 시작하세요.",emptyTemp:"아직 체온 기록이 없습니다. 아래에서 첫 체온을 입력하세요.",
+ lv:["정상","미열","발열","고열"],measuredAt:t=>t+" 측정",sinceLast:"마지막 측정 후",feverFor:"이번 열 지속 시간",maxThis:"이번 최고 체온",noFever:"현재 발열 기록 없음",
+ attention:"주의",aInfant:"생후 3개월 미만 아기가 38℃ 이상입니다. 빨리 진료를 받으세요",aHigh:v=>"체온이 "+v+"℃까지 올랐습니다",a72:"이번 열이 72시간 넘게 계속되고 있습니다",aSym:s=>"최근 48시간 내 「"+s+"」 기록이 있습니다",
+ medTitle:"투약 간격",medNote:"간격은 일반적인 설명서 기준이며, 의사의 지시를 우선하세요.",lastDose:(d,ago)=>"마지막 "+d+" (" +ago+" 경과)",readyNow:"지금 다시 먹일 수 있습니다",nextAt:(t,left)=>t+" 이후 가능 (" +left+" 남음)",
+ count24:(c,m,g)=>"24시간 내 "+c+"/"+m+"회 · 간격 "+g+"시간 이상",count24n:c=>"24시간 내 "+c+"회",
+ dur:(h,m)=>h?(h+"시간"+(m?" "+m+"분":"")):m+"분",
+ sumTitle:n=>n+" 발열 기록",sumAge:m=>"개월 수: "+m+"개월",sumStart:(d,mx)=>"이번 발열 시작: "+d+", 최고 "+mx+"℃",sumMed:"투약: ",sumSym:"증상: ",sep:", ",
+ copied:"복사했습니다",selectCopy:"선택했습니다. 직접 복사해 주세요",needKid:"먼저 아이를 추가하세요",needName:"이름을 입력하세요",needSym:"증상을 선택하거나 메모를 입력하세요",saved:t=>t+" 기록 완료",
+ exported:"내보냈습니다",imported:n=>n+"건을 가져왔습니다",badFile:"파일 형식이 맞지 않습니다. 내보낸 백업 파일을 선택하세요",backupName:"열기록_백업"}
+};
+// Map labels written by earlier (Chinese-only) versions back to keys.
+const ZHREV={};[["sites",SITES],["meds",MEDS],["syms",SYMS]].forEach(([g,ks])=>ks.forEach(k=>ZHREV[I.zh[g][k]]=k));
+
+const LS="fever-log-v1";
+let L;
+function pickLang(){
+  let l=null;try{l=localStorage.getItem(LS+"-lang");}catch(e){}
+  if(!l){const n=(navigator.language||"zh").toLowerCase();l=n.startsWith("ja")?"ja":n.startsWith("ko")?"ko":"zh";}
+  return I[l]?l:"zh";
+}
+let lang=pickLang(); L=I[lang];
+const lbl=(g,v)=>{if(!v)return"";const k=L[g][v]?v:ZHREV[v];return k&&L[g][k]?L[g][k]:v;};
+
+function applyLang(){
+  L=I[lang];document.documentElement.lang=L.lang;document.title=L.appName;
+  document.querySelectorAll("[data-i]").forEach(el=>{const v=L[el.dataset.i];if(typeof v==="string")el.textContent=v;});
+  document.querySelectorAll("#langSw button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===lang));
+  $("#kidName").placeholder=L.childPh;$("#dose").placeholder=L.dosePh;$("#medOther").placeholder=L.medOtherLbl;
+  const site=$("#site").value;$("#site").innerHTML=SITES.map(k=>'<option value="'+k+'">'+L.sites[k]+'</option>').join("");if(site)$("#site").value=site;
+  const med=$("#medName").value;$("#medName").innerHTML=MEDS.map(k=>'<option value="'+k+'">'+L.meds[k]+'</option>').join("");if(med)$("#medName").value=med;
+  $("#redList").innerHTML=L.red.map(r=>"<li>"+r+"</li>").join("");
+  $("#chart").setAttribute("aria-label",L.chartTitle);
+  document.querySelectorAll("#fineAdj .adj").forEach(b=>{const d=+b.dataset.d;b.textContent=(d<0?"−":"+")+Math.abs(d)+L.min;});
+  chips.querySelectorAll(".chip").forEach(c=>c.textContent=L.syms[c.dataset.k]);
+  setKind(kind);showWhen();render();
+}
+
+// ================= state & helpers =================
+let state={kids:[],entries:[]}, cur=null, kind="temp", temp=38.5, rangeH=72, syms=new Set();
 function lsLoad(){try{const d=JSON.parse(localStorage.getItem(LS)||"null");if(d)state=d;}catch(e){}}
 function lsSave(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){}}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
@@ -242,95 +345,76 @@ const pad=n=>String(n).padStart(2,"0");
 const hm=t=>{const d=new Date(t);return pad(d.getHours())+":"+pad(d.getMinutes());};
 const md=t=>{const d=new Date(t);return (d.getMonth()+1)+"/"+d.getDate();};
 const localInput=t=>{const d=new Date(t);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());};
-function dur(ms){const m=Math.max(0,Math.round(ms/60000));const h=Math.floor(m/60);return h?(h+"小时"+(m%60?m%60+"分":"")):m+"分钟";}
+function dur(ms){const m=Math.max(0,Math.round(ms/60000));return L.dur(Math.floor(m/60),m%60);}
 function tColor(v){return v>=39.5?"var(--vhot)":v>=38.5?"var(--hot)":v>=37.5?"var(--warm)":"var(--ok)";}
-function tLabel(v){return v>=39.5?"高烧":v>=38.5?"中度发热":v>=37.5?"低烧":"正常";}
+function tLabel(v){return L.lv[v>=39.5?3:v>=38.5?2:v>=37.5?1:0];}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+const medKey=n=>MED_RULE[n]?n:(ZHREV[n]&&MED_RULE[ZHREV[n]]?ZHREV[n]:n);
 
-// ---------- storage ----------
-// Each tester's records are private: cloud = data/users/<id>/profile (+ entries), otherwise this device only.
-let me=null; // profile doc ref
-function goLocal(){db=null;me=null;$("#sync").textContent="保存在本机浏览器";}
-async function addEntry(e){
-  state.entries.push(e);render();
-  if(db){try{await me.collection("entries").doc(e.id).set(e);return;}catch(err){goLocal();}}
-  lsSave();
-}
-async function delEntry(id){
-  state.entries=state.entries.filter(x=>x.id!==id);render();
-  if(db){try{await me.collection("entries").doc(id).delete();return;}catch(err){goLocal();}}
-  lsSave();
-}
-async function saveKids(){
-  render();
-  if(db){try{await me.set({kids:state.kids});return;}catch(err){goLocal();}}
-  lsSave();
-}
+function addEntry(e){state.entries.push(e);lsSave();render();}
+function delEntry(id){state.entries=state.entries.filter(x=>x.id!==id);lsSave();render();}
+function saveKids(){lsSave();render();}
 
-// ---------- derived ----------
+// ================= derived =================
 function kidEntries(){return state.entries.filter(e=>e.kid===cur).sort((a,b)=>a.t-b.t);}
 function episode(list){
   const f=list.filter(e=>e.type==="temp"&&e.temp>=37.5);
   if(!f.length)return null;
   let start=f[0].t;
   for(let i=1;i<f.length;i++) if(f[i].t-f[i-1].t>24*3600e3) start=f[i].t;
-  const inEp=f.filter(e=>e.t>=start);
-  const last=f[f.length-1];
-  const active=Date.now()-last.t<24*3600e3;
-  return {start,max:Math.max(...inEp.map(e=>e.temp)),active,last:last.t};
+  const inEp=f.filter(e=>e.t>=start);const last=f[f.length-1];
+  return {start,max:Math.max(...inEp.map(e=>e.temp)),active:Date.now()-last.t<24*3600e3};
 }
 function kidAgeMonths(k){if(!k||!k.birth)return null;const b=new Date(k.birth),n=new Date();return (n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth()-(n.getDate()<b.getDate()?1:0);}
 
-// ---------- render ----------
+// ================= render =================
 function renderKids(){
   const box=$("#kids");box.innerHTML="";
   state.kids.forEach(k=>{const b=document.createElement("button");b.className="pill";b.textContent=k.name;b.setAttribute("aria-pressed",k.id===cur);b.onclick=()=>{cur=k.id;try{localStorage.setItem(LS+"-cur",cur)}catch(e){};render();syncDefault();};box.appendChild(b);});
-  const a=document.createElement("button");a.className="pill";a.textContent="+ 孩子";a.onclick=()=>{$("#addKid").hidden=false;$("#kidName").focus();};box.appendChild(a);
+  const a=document.createElement("button");a.className="pill";a.textContent=L.addKidBtn;a.onclick=()=>{$("#addKid").hidden=false;$("#kidName").focus();};box.appendChild(a);
 }
 function renderStatus(list){
   const el=$("#statusCard");const temps=list.filter(e=>e.type==="temp");
   const kid=state.kids.find(k=>k.id===cur);
-  if(!kid){el.innerHTML='<div class="empty">先点右上角「+ 孩子」添加一个孩子，再开始记录。</div>';return;}
-  if(!temps.length){el.innerHTML='<div class="empty">还没有体温记录。在下方输入第一次测量的体温。</div>';return;}
+  if(!kid){el.innerHTML='<div class="empty">'+L.emptyKid+'</div>';return;}
+  if(!temps.length){el.innerHTML='<div class="empty">'+L.emptyTemp+'</div>';return;}
   const last=temps[temps.length-1],ep=episode(list),now=Date.now();
   const alerts=[];const age=kidAgeMonths(kid);
-  if(age!==null&&age<3&&last.temp>=38)alerts.push("3个月以下宝宝体温 ≥38℃，建议尽快就医");
-  if(last.temp>=40)alerts.push("体温已达 "+last.temp.toFixed(1)+"℃");
-  if(ep&&ep.active&&now-ep.start>=72*3600e3)alerts.push("本次发烧已持续超过 72 小时");
-  const recentSym=list.filter(e=>e.type==="sym"&&now-e.t<48*3600e3).flatMap(e=>e.syms||[]);
-  ["抽搐","呼吸急促","精神差","尿少"].forEach(s=>{if(recentSym.includes(s))alerts.push("近48小时出现「"+s+"」");});
-  // meds
-  const meds={};list.filter(e=>e.type==="med").forEach(e=>{(meds[e.med]=meds[e.med]||[]).push(e);});
-  const medHtml=Object.keys(meds).map(name=>{
-    const arr=meds[name],lm=arr[arr.length-1],rule=MED_RULE[name];
+  if(age!==null&&age<3&&last.temp>=38)alerts.push(L.aInfant);
+  if(last.temp>=40)alerts.push(L.aHigh(last.temp.toFixed(1)));
+  if(ep&&ep.active&&now-ep.start>=72*3600e3)alerts.push(L.a72);
+  const recent=new Set(list.filter(e=>e.type==="sym"&&now-e.t<48*3600e3).flatMap(e=>(e.syms||[]).map(s=>ZHREV[s]||s)));
+  DANGER.forEach(s=>{if(recent.has(s))alerts.push(L.aSym(L.syms[s]));});
+  const meds={};list.filter(e=>e.type==="med").forEach(e=>{const k=medKey(e.med);(meds[k]=meds[k]||[]).push(e);});
+  const medHtml=Object.keys(meds).map(k=>{
+    const arr=meds[k],lm=arr[arr.length-1],rule=MED_RULE[k];
     const c24=arr.filter(e=>now-e.t<24*3600e3).length;
-    let line='<span class="fine">上次 '+md(lm.t)+' '+hm(lm.t)+(lm.dose?' · '+esc(lm.dose):'')+'，已过 '+dur(now-lm.t)+'</span>';
+    let line='<span class="fine">'+esc(L.lastDose(md(lm.t)+' '+hm(lm.t)+(lm.dose?' · '+lm.dose:''),dur(now-lm.t)))+'</span>';
     if(rule){const next=lm.t+rule.gap*3600e3;
-      line+= next<=now?'<span class="when ready">现在可再次使用</span>':'<span class="when wait">最早 '+hm(next)+'（还需 '+dur(next-now)+'）</span>';
-      line+='<span class="fine">24小时内 '+c24+'/'+rule.max+' 次 · 间隔≥'+rule.gap+'小时</span>';}
-    else line+='<span class="fine">24小时内 '+c24+' 次</span>';
-    return '<div class="medbox"><b>'+esc(name)+'</b>'+line+'</div>';
+      line+= next<=now?'<span class="when ready">'+L.readyNow+'</span>':'<span class="when wait">'+L.nextAt(hm(next),dur(next-now))+'</span>';
+      line+='<span class="fine">'+L.count24(c24,rule.max,rule.gap)+'</span>';}
+    else line+='<span class="fine">'+L.count24n(c24)+'</span>';
+    return '<div class="medbox"><b>'+esc(lbl("meds",k))+'</b>'+line+'</div>';
   }).join("");
   el.innerHTML=
-   (alerts.length?'<div class="alert"><b>请注意</b><ul>'+alerts.map(a=>'<li>'+esc(a)+'</li>').join("")+'</ul></div>':'')+
+   (alerts.length?'<div class="alert"><b>'+L.attention+'</b><ul>'+alerts.map(a=>'<li>'+esc(a)+'</li>').join("")+'</ul></div>':'')+
    '<div class="status"><div class="big" style="color:'+tColor(last.temp)+'">'+last.temp.toFixed(1)+'<small>℃</small></div>'+
    '<div class="meta">'+
-     '<div><b><span class="badge" style="background:'+tColor(last.temp)+'">'+tLabel(last.temp)+'</span></b><span>'+esc(last.site||"")+' · '+hm(last.t)+'测</span></div>'+
-     '<div><b>'+dur(now-last.t)+'</b><span>距上次测量</span></div>'+
-     (ep&&ep.active?'<div><b>'+dur(now-ep.start)+'</b><span>本次发烧已持续</span></div><div><b>'+ep.max.toFixed(1)+'℃</b><span>本次最高</span></div>':'<div><b>—</b><span>目前无发热记录</span></div>')+
+     '<div><b><span class="badge" style="background:'+tColor(last.temp)+'">'+tLabel(last.temp)+'</span></b><span>'+esc(lbl("sites",last.site))+' · '+L.measuredAt(hm(last.t))+'</span></div>'+
+     '<div><b>'+dur(now-last.t)+'</b><span>'+L.sinceLast+'</span></div>'+
+     (ep&&ep.active?'<div><b>'+dur(now-ep.start)+'</b><span>'+L.feverFor+'</span></div><div><b>'+ep.max.toFixed(1)+'℃</b><span>'+L.maxThis+'</span></div>':'<div><b>—</b><span>'+L.noFever+'</span></div>')+
    '</div></div>'+
-   (medHtml?'<h2>用药间隔</h2><div class="meds">'+medHtml+'</div><div class="fine">间隔按常见说明书，以医嘱为准。</div>':'');
+   (medHtml?'<h2>'+L.medTitle+'</h2><div class="meds">'+medHtml+'</div><div class="fine">'+L.medNote+'</div>':'');
 }
 function renderChart(list){
-  const svg=$("#chart");const W=600,H=240,L=40,R=12,T=12,B=40;
-  const now=Date.now();const temps=list.filter(e=>e.type==="temp");
-  let end=now;const start=end-rangeH*3600e3;
-  const lo=35.5,hi=41;const x=t=>L+(t-start)/(end-start)*(W-L-R);const y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  const svg=$("#chart");const W=600,H=240,Lm=40,R=12,T=12,B=40;
+  const end=Date.now(),start=end-rangeH*3600e3;const temps=list.filter(e=>e.type==="temp");
+  const lo=35.5,hi=41;const x=t=>Lm+(t-start)/(end-start)*(W-Lm-R);const y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
   let s='';
-  [[37.5,"var(--warm)"],[38.5,"var(--hot)"],[39.5,"var(--vhot)"]].forEach(([v,c])=>{s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+c+'" stroke-dasharray="4 4" opacity=".6"/>';});
-  [36,37,38,39,40,41].forEach(v=>{s+='<text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'</text><line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width=".6"/>';});
-  // x ticks
+  [[37.5,"var(--warm)"],[38.5,"var(--hot)"],[39.5,"var(--vhot)"]].forEach(([v,c])=>{s+='<line x1="'+Lm+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+c+'" stroke-dasharray="4 4" opacity=".6"/>';});
+  [36,37,38,39,40,41].forEach(v=>{s+='<text x="'+(Lm-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'</text><line x1="'+Lm+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width=".6"/>';});
   const step=rangeH<=24?4:rangeH<=72?12:24;const d0=new Date(start);d0.setMinutes(0,0,0);
-  for(let t=d0.getTime();t<=end;t+=3600e3){const d=new Date(t);if(d.getHours()%step)continue;if(t<start)continue;
+  for(let t=d0.getTime();t<=end;t+=3600e3){const d=new Date(t);if(d.getHours()%step||t<start)continue;
     s+='<line x1="'+x(t)+'" x2="'+x(t)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--line)" stroke-width=".6"/>';
     s+='<text x="'+x(t)+'" y="'+(H-B+14)+'" text-anchor="middle">'+(d.getHours()===0||step===24?md(t):pad(d.getHours())+':00')+'</text>';}
   const vis=temps.filter(e=>e.t>=start&&e.t<=end);
@@ -339,31 +423,30 @@ function renderChart(list){
     s+='<polyline points="'+pts+'" fill="none" stroke="var(--ink)" stroke-width="1.6" opacity=".55"/>';}
   vis.forEach((e,i)=>{const cx=x(e.t),cy=y(Math.min(hi,Math.max(lo,e.temp)));s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(i===vis.length-1?5.5:4)+'" fill="'+tColor(e.temp)+'" stroke="var(--card)" stroke-width="1.5"><title>'+e.temp+'℃ '+hm(e.t)+'</title></circle>';});
   list.filter(e=>e.type==="med"&&e.t>=start&&e.t<=end).forEach(e=>{const cx=x(e.t),cy=H-B+26;
-    s+='<path d="M'+cx+' '+(cy-7)+' L'+(cx+6)+' '+(cy+3)+' L'+(cx-6)+' '+(cy+3)+'Z" fill="var(--med)"><title>'+esc(e.med)+' '+hm(e.t)+'</title></path>';
+    s+='<path d="M'+cx+' '+(cy-7)+' L'+(cx+6)+' '+(cy+3)+' L'+(cx-6)+' '+(cy+3)+'Z" fill="var(--med)"><title>'+esc(lbl("meds",e.med))+' '+hm(e.t)+'</title></path>';
     s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--med)" stroke-width=".8" opacity=".4"/>';});
-  if(!vis.length)s+='<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle">这段时间没有体温记录</text>';
+  if(!vis.length)s+='<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle">'+L.noTempRange+'</text>';
   svg.innerHTML=s;
 }
-function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function describe(e){
-  if(e.type==="temp")return '<b style="color:'+tColor(e.temp)+'">'+e.temp.toFixed(1)+'℃</b> <span class="fine">'+esc(e.site||"")+'</span>';
-  if(e.type==="med")return '<b style="color:var(--med)">'+esc(e.med)+'</b> '+esc(e.dose||"");
-  return (e.syms&&e.syms.length?'<b>'+e.syms.map(esc).join("、")+'</b> ':'')+esc(e.note||"");
+  if(e.type==="temp")return '<b style="color:'+tColor(e.temp)+'">'+e.temp.toFixed(1)+'℃</b> <span class="fine">'+esc(lbl("sites",e.site))+'</span>';
+  if(e.type==="med")return '<b style="color:var(--med)">'+esc(lbl("meds",e.med))+'</b> '+esc(e.dose||"");
+  return (e.syms&&e.syms.length?'<b>'+e.syms.map(s=>esc(lbl("syms",s))).join(L.sep)+'</b> ':'')+esc(e.note||"");
 }
 function renderTimeline(list){
   const ul=$("#timeline");ul.innerHTML="";
-  if(!list.length){ul.innerHTML='<li class="empty" style="display:block">暂无记录</li>';return;}
+  if(!list.length){ul.innerHTML='<li class="empty" style="display:block">'+L.noRecords+'</li>';return;}
   let lastDay="";
   list.slice().reverse().forEach(e=>{
     const day=md(e.t);if(day!==lastDay){const h=document.createElement("li");h.className="day";h.textContent=day;ul.appendChild(h);lastDay=day;}
     const li=document.createElement("li");
     const c=e.type==="temp"?tColor(e.temp):e.type==="med"?"var(--med)":"var(--mute)";
     li.innerHTML='<span class="t">'+hm(e.t)+'</span><span class="dot" style="background:'+c+'"></span><span class="body">'+describe(e)+'</span>';
-    const del=document.createElement("button");del.className="del";del.textContent="删除";
-    del.onclick=()=>{const w=document.createElement("span");w.className="confirm";w.innerHTML='确认删除？';
-      const y=document.createElement("button");y.className="ghost";y.textContent="删除";y.onclick=()=>delEntry(e.id);
-      const n=document.createElement("button");n.className="ghost";n.textContent="取消";n.onclick=()=>render();
-      w.append(y,n);del.replaceWith(w);};
+    const del=document.createElement("button");del.className="del";del.textContent=L.del;
+    del.onclick=()=>{const w=document.createElement("span");w.className="confirm";w.textContent=L.confirmDel;
+      const yb=document.createElement("button");yb.className="ghost";yb.textContent=L.del;yb.onclick=()=>delEntry(e.id);
+      const nb=document.createElement("button");nb.className="ghost";nb.textContent=L.cancel;nb.onclick=()=>render();
+      w.append(yb,nb);del.replaceWith(w);};
     li.appendChild(del);ul.appendChild(li);
   });
 }
@@ -372,34 +455,34 @@ function render(){
   renderKids();const list=kidEntries();renderStatus(list);renderChart(list);renderTimeline(list);
 }
 
-// ---------- summary ----------
+// ================= summary =================
 function summary(){
   const kid=state.kids.find(k=>k.id===cur);const list=kidEntries();const ep=episode(list);
-  let s=(kid?kid.name:"")+" 发烧记录\n";
-  const age=kidAgeMonths(kid);if(age!==null)s+="月龄："+age+"个月\n";
-  if(ep)s+="本次发烧开始："+md(ep.start)+" "+hm(ep.start)+"，最高 "+ep.max.toFixed(1)+"℃\n";
+  let s=L.sumTitle(kid?kid.name:"")+"\n";
+  const age=kidAgeMonths(kid);if(age!==null)s+=L.sumAge(age)+"\n";
+  if(ep)s+=L.sumStart(md(ep.start)+" "+hm(ep.start),ep.max.toFixed(1))+"\n";
   s+="\n";let lastDay="";
   list.forEach(e=>{const d=md(e.t);if(d!==lastDay){s+="【"+d+"】\n";lastDay=d;}
-    s+=hm(e.t)+"  "+(e.type==="temp"?e.temp.toFixed(1)+"℃("+(e.site||"")+")":e.type==="med"?"用药："+e.med+" "+(e.dose||""):"症状："+[(e.syms||[]).join("、"),e.note].filter(Boolean).join(" / "))+"\n";});
+    s+=hm(e.t)+"  "+(e.type==="temp"?e.temp.toFixed(1)+"℃ ("+lbl("sites",e.site)+")":e.type==="med"?L.sumMed+lbl("meds",e.med)+" "+(e.dose||""):L.sumSym+[(e.syms||[]).map(x=>lbl("syms",x)).join(L.sep),e.note].filter(Boolean).join(" / "))+"\n";});
   return s;
 }
 $("#copyBtn").onclick=()=>{const s=summary();const ta=$("#summaryFallback");
-  const fb=()=>{ta.value=s;ta.hidden=false;ta.focus();ta.select();toast("已选中，请手动复制");};
-  try{navigator.clipboard.writeText(s).then(()=>{ta.hidden=true;toast("已复制");},fb);}catch(e){fb();}};
+  const fb=()=>{ta.value=s;ta.hidden=false;ta.focus();ta.select();toast(L.selectCopy);};
+  try{navigator.clipboard.writeText(s).then(()=>{ta.hidden=true;toast(L.copied);},fb);}catch(e){fb();}};
 
-// ---------- entry form ----------
+// ================= entry form =================
 function setKind(k){kind=k;document.querySelectorAll("#entryTabs .tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.k===k));
-  $("#f-temp").hidden=k!=="temp";$("#f-med").hidden=k!=="med";$("#f-sym").hidden=k!=="sym";$("#f-sym").style.display=k==="sym"?"flex":"none";
-  $("#saveEntry").textContent=k==="temp"?"记录体温":k==="med"?"记录用药":"记录症状";}
+  $("#f-temp").hidden=k!=="temp";$("#f-med").hidden=k!=="med";$("#f-sym").hidden=k!=="sym";$("#f-sym").style.display=k==="sym"?"flex":"";
+  $("#saveEntry").textContent=k==="temp"?L.saveTemp:k==="med"?L.saveMed:L.saveSym;}
 document.querySelectorAll("#entryTabs .tab").forEach(b=>b.onclick=()=>setKind(b.dataset.k));
 // Two taps to any reading: whole degree, then decimal. Defaults to the last reading.
-const INTS=[35,36,37,38,39,40], tInt=$("#tInt"), tDec=$("#tDec");
-INTS.forEach(n=>{const b=document.createElement("button");b.textContent=n;b.dataset.v=n;
+const tInt=$("#tInt"), tDec=$("#tDec");
+[35,36,37,38,39,40].forEach(n=>{const b=document.createElement("button");b.textContent=n;b.dataset.v=n;
   b.onclick=()=>{temp=Math.round((n+(Math.round(temp*10)%10)/10)*10)/10;showT();};tInt.appendChild(b);});
 for(let d=0;d<10;d++){const b=document.createElement("button");b.textContent="."+d;b.dataset.v=d;
   b.onclick=()=>{temp=Math.round((Math.floor(temp+1e-9)+d/10)*10)/10;showT();};tDec.appendChild(b);}
-$("#tType").addEventListener("input",ev=>{let s=ev.target.value.replace(/[^\d.]/g,"");if(!s)return;
-  let v=s.includes(".")?parseFloat(s):(s.length>=3?parseInt(s.slice(0,3))/10:NaN);
+$("#tType").addEventListener("input",ev=>{const s=ev.target.value.replace(/[^\d.]/g,"");if(!s)return;
+  const v=s.includes(".")?parseFloat(s):(s.length>=3?parseInt(s.slice(0,3))/10:NaN);
   if(v>=34&&v<=43){temp=Math.round(v*10)/10;showT();}});
 $("#tType").addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();$("#saveEntry").click();}});
 function showT(){$("#tVal").textContent=temp.toFixed(1)+"℃";$("#tVal").style.color=tColor(temp);
@@ -409,15 +492,15 @@ function showT(){$("#tVal").textContent=temp.toFixed(1)+"℃";$("#tVal").style.c
 function syncDefault(){const t=kidEntries().filter(e=>e.type==="temp").pop();if(t){temp=t.temp;showT();}}
 $("#tMinus").onclick=()=>{temp=Math.max(34,Math.round((temp-0.1)*10)/10);showT();};
 $("#tPlus").onclick=()=>{temp=Math.min(43,Math.round((temp+0.1)*10)/10);showT();};
-$("#medName").onchange=()=>{$("#medOtherWrap").hidden=$("#medName").value!=="其他";};
-// ---- time picking: quick offsets for one-thumb use, fine adjust only when needed ----
+$("#medName").onchange=()=>{$("#medOtherWrap").hidden=$("#medName").value!=="other";};
+
+// time picking: quick offsets for one-thumb use, fine adjust only when needed
 let offMin=0, custom=false;
 function getWhen(){if(custom&&$("#when").value)return new Date($("#when").value).getTime();return Date.now()-offMin*60000;}
 function showWhen(){const t=getWhen(),d=new Date(t),today=new Date();
-  const sameDay=d.toDateString()===today.toDateString();
-  const y=new Date(today);y.setDate(today.getDate()-1);
-  const dayLbl=sameDay?"今天":(d.toDateString()===y.toDateString()?"昨天":md(t));
-  $("#whenShow").textContent=(!custom&&offMin===0)?"现在 "+hm(t):dayLbl+" "+hm(t);}
+  const yd=new Date(today);yd.setDate(today.getDate()-1);
+  const dayLbl=d.toDateString()===today.toDateString()?L.today:(d.toDateString()===yd.toDateString()?L.yesterday:md(t));
+  $("#whenShow").textContent=(!custom&&offMin===0)?L.now+" "+hm(t):dayLbl+" "+hm(t);}
 function pickQuick(m){
   document.querySelectorAll("#quickTime .qt").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.m===m));
   if(m===-1){custom=true;$("#fineAdj").hidden=false;$("#when").value=localInput(Date.now()-offMin*60000);}
@@ -427,44 +510,47 @@ document.querySelectorAll("#quickTime .qt").forEach(b=>b.onclick=()=>pickQuick(+
 document.querySelectorAll("#fineAdj .adj").forEach(b=>b.onclick=()=>{const t=Math.min(Date.now(),getWhen()+(+b.dataset.d)*60000);$("#when").value=localInput(t);showWhen();});
 $("#when").addEventListener("input",showWhen);
 setInterval(()=>{if(!custom)showWhen();},30000);
-const chips=$("#symChips");SYMS.forEach(s=>{const b=document.createElement("button");b.className="chip";b.textContent=s;b.setAttribute("aria-pressed","false");
-  b.onclick=()=>{syms.has(s)?syms.delete(s):syms.add(s);b.setAttribute("aria-pressed",syms.has(s));};chips.appendChild(b);});
+
+const chips=$("#symChips");SYMS.forEach(k=>{const b=document.createElement("button");b.className="chip";b.dataset.k=k;b.setAttribute("aria-pressed","false");
+  b.onclick=()=>{syms.has(k)?syms.delete(k):syms.add(k);b.setAttribute("aria-pressed",syms.has(k));};chips.appendChild(b);});
 document.querySelectorAll("#range .tab").forEach(b=>b.onclick=()=>{rangeH=+b.dataset.h;document.querySelectorAll("#range .tab").forEach(x=>x.setAttribute("aria-selected",x===b));render();});
 
-$("#saveEntry").onclick=async()=>{
-  if(!cur){$("#addKid").hidden=false;toast("请先添加孩子");return;}
-  const t=getWhen();
-  const e={id:uid(),kid:cur,t,type:kind};
+$("#saveEntry").onclick=()=>{
+  if(!cur){$("#addKid").hidden=false;toast(L.needKid);return;}
+  const t=getWhen();const e={id:uid(),kid:cur,t,type:kind};
   if(kind==="temp"){$("#tType").value="";e.temp=temp;e.site=$("#site").value;try{localStorage.setItem(LS+"-site",e.site)}catch(x){}}
-  else if(kind==="med"){e.med=$("#medName").value==="其他"?($("#medOther").value.trim()||"其他"):$("#medName").value;e.dose=$("#dose").value.trim();}
-  else{e.syms=[...syms];e.note=$("#note").value.trim();if(!e.syms.length&&!e.note){toast("请选择症状或填写备注");return;}}
-  await addEntry(e);toast("已记录 "+hm(t));
-  pickQuick(0);
+  else if(kind==="med"){const v=$("#medName").value;e.med=v==="other"?($("#medOther").value.trim()||"other"):v;e.dose=$("#dose").value.trim();}
+  else{e.syms=[...syms];e.note=$("#note").value.trim();if(!e.syms.length&&!e.note){toast(L.needSym);return;}}
+  addEntry(e);toast(L.saved(hm(t)));pickQuick(0);
   if(kind==="sym"){syms.clear();chips.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));$("#note").value="";}
 };
-$("#saveKid").onclick=()=>{const n=$("#kidName").value.trim();if(!n){toast("请填写名字");return;}
-  const k={id:uid(),name:n,birth:$("#kidBirth").value||""};state.kids.push(k);cur=k.id;$("#addKid").hidden=true;$("#kidName").value="";$("#kidBirth").value="";saveKids();render();};
+$("#saveKid").onclick=()=>{const n=$("#kidName").value.trim();if(!n){toast(L.needName);return;}
+  const k={id:uid(),name:n,birth:$("#kidBirth").value||""};state.kids.push(k);cur=k.id;$("#addKid").hidden=true;$("#kidName").value="";$("#kidBirth").value="";saveKids();};
 $("#cancelKid").onclick=()=>{$("#addKid").hidden=true;};
 
-// ---------- boot ----------
-lsLoad();try{cur=localStorage.getItem(LS+"-cur");const st=localStorage.getItem(LS+"-site");if(st)$("#site").value=st;}catch(e){}
-if(cur&&!state.kids.some(k=>k.id===cur))cur=null;
-pickQuick(0);showT();setKind("temp");render();syncDefault();
-setInterval(()=>{const l=kidEntries();renderStatus(l);},60000);
+document.querySelectorAll("#langSw button").forEach(b=>b.onclick=()=>{lang=b.dataset.l;try{localStorage.setItem(LS+"-lang",lang)}catch(e){};applyLang();});
 
-// ---------- backup ----------
+// ================= backup =================
 $("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,1)],{type:"application/json"});
   const a=document.createElement("a");const d=new Date();a.href=URL.createObjectURL(blob);
-  a.download="退烧记录备份_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove();toast("已导出");};
+  a.download=L.backupName+"_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove();toast(L.exported);};
 $("#importFile").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.kids)||!Array.isArray(d.entries))throw 0;
     const ids=new Set(state.entries.map(e=>e.id));d.entries.forEach(e=>{if(!ids.has(e.id))state.entries.push(e);});
     const kids=new Set(state.kids.map(k=>k.id));d.kids.forEach(k=>{if(!kids.has(k.id))state.kids.push(k);});
-    lsSave();render();toast("已导入 "+d.entries.length+" 条");}catch(e){toast("文件格式不对，请选择导出的备份文件");}};
+    lsSave();render();toast(L.imported(d.entries.length));}catch(e){toast(L.badFile);}};
   r.readAsText(f);ev.target.value="";};
+
+// ================= boot =================
+lsLoad();
+try{cur=localStorage.getItem(LS+"-cur");}catch(e){}
+if(cur&&!state.kids.some(k=>k.id===cur))cur=null;
+applyLang();
+try{const st=localStorage.getItem(LS+"-site");const k=st&&(SITES.includes(st)?st:ZHREV[st]);if(k)$("#site").value=k;}catch(e){}
+pickQuick(0);showT();syncDefault();
+setInterval(()=>renderStatus(kidEntries()),60000);
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
 })();
 </script>
-
 </body></html>
