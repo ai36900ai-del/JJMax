@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f8f83">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="退烧记录">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>退烧记录本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap">
+<style>
+/* Layout: one narrow column like a bedside clipboard — status, chart, quick entry, timeline */
+:root{
+  --bg:#f2f5f3; --card:#ffffff; --ink:#1d2a2b; --mute:#647372; --line:#dbe3e0;
+  --ok:#2f8f83; --warm:#d9902b; --hot:#d4553f; --vhot:#a8233a; --med:#5a62c9;
+  --chip:#e8eeec;
+  --f-num:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
+  --f-body:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121a1a; --card:#1a2424; --ink:#e4ecea; --mute:#91a19f; --line:#2b3837;
+  --ok:#4fb8a9; --warm:#e8a64a; --hot:#ec7660; --vhot:#f0607a; --med:#8f97ef; --chip:#243130; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a1a; --card:#1a2424; --ink:#e4ecea; --mute:#91a19f; --line:#2b3837;
+  --ok:#4fb8a9; --warm:#e8a64a; --hot:#ec7660; --vhot:#f0607a; --med:#8f97ef; --chip:#243130; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:16px 48px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-num);font-size:22px;margin:0;letter-spacing:.01em}
+h2{font-size:13px;margin:0;color:var(--mute);font-weight:600;letter-spacing:.08em}
+.kids{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+button,select,input,textarea{font:inherit;color:inherit}
+.pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.status{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.big{font-family:var(--f-num);font-weight:700;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:22px;font-weight:500;margin-left:2px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px 14px}
+.meta div{display:flex;flex-direction:column}
+.meta b{font-family:var(--f-num);font-size:18px;font-variant-numeric:tabular-nums}
+.meta span{font-size:12px;color:var(--mute)}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;color:#fff;font-weight:600}
+.alert{border-radius:10px;padding:10px 12px;font-size:14px;border:1px solid var(--hot);color:var(--hot);background:color-mix(in srgb,var(--hot) 8%,var(--card))}
+.alert ul{margin:4px 0 0;padding-left:18px}
+.meds{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.medbox{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.medbox b{color:var(--med)}
+.medbox .when{font-family:var(--f-num);font-size:17px;font-variant-numeric:tabular-nums}
+.medbox .ready{color:var(--ok)}
+.medbox .wait{color:var(--warm)}
+.fine{font-size:12px;color:var(--mute)}
+.chartbox{overflow-x:auto}
+svg text{fill:var(--mute);font-size:11px;font-family:var(--f-body)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:none;background:var(--chip);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute);flex:1 1 140px;min-width:0}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:60px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:22px;cursor:pointer}
+.stepper output{font-family:var(--f-num);font-weight:700;font-size:44px;min-width:130px;text-align:center;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 11px;cursor:pointer;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--hot);color:#fff;border-color:var(--hot)}
+.primary{background:var(--ok);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:16px}
+.ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--med);outline-offset:2px}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.timeline li{display:grid;grid-template-columns:52px 14px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line)}
+.timeline li:first-child{border-top:none}
+.timeline .t{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:14px}
+.timeline .d{font-size:11px;color:var(--mute);display:block}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:6px}
+.timeline .body{min-width:0;overflow-wrap:anywhere}
+.del{background:none;border:none;color:var(--mute);cursor:pointer;font-size:13px;padding:2px 6px}
+.day{font-size:12px;color:var(--mute);padding:10px 0 2px;border-top:none!important;display:block!important}
+.empty{color:var(--mute);text-align:center;padding:18px 0}
+#f-temp>label{flex:0 0 auto}
+.tgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.tgrid.dec{grid-template-columns:repeat(10,1fr)}
+.tgrid button{min-height:48px;border:1px solid var(--line);background:var(--bg);border-radius:10px;cursor:pointer;font-family:var(--f-num);font-size:20px;font-variant-numeric:tabular-nums;padding:0}
+.tgrid.dec button{font-size:17px;min-height:44px}
+.tgrid button[aria-pressed="true"]{color:#fff;border-color:transparent}
+@media (max-width:420px){.tgrid.dec{grid-template-columns:repeat(5,1fr)}}
+.timepick{display:flex;flex-direction:column;gap:8px}
+.tp-head{display:flex;align-items:baseline;gap:10px}
+.tp-head b{font-family:var(--f-num);font-size:20px;font-variant-numeric:tabular-nums}
+.qt{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 14px;cursor:pointer;font-size:15px;min-height:44px}
+.qt[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tp-fine{display:grid;grid-template-columns:auto auto 1fr auto auto;gap:6px;align-items:center}
+.tp-fine input{font-size:16px;min-height:44px}
+.adj{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:44px;padding:0 10px;cursor:pointer;font-size:14px;white-space:nowrap}
+@media (max-width:460px){.tp-fine{grid-template-columns:1fr 1fr 1fr 1fr}.tp-fine input{grid-column:1/-1;order:-1}}
+input,select{font-size:16px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px}
+.confirm{display:flex;gap:6px;align-items:center;font-size:13px}
+.sync{font-size:12px;color:var(--mute)}
+@media (max-width:420px){.big{font-size:46px}.status{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>退烧记录本</h1>
+      <div class="sync" id="sync">记录保存在这台手机上</div>
+    </div>
+    <div class="kids" id="kids"></div>
+  </header>
+
+  <div id="addKid" class="card" hidden>
+    <h2>添加孩子</h2>
+    <div class="row">
+      <label>名字/昵称<input id="kidName" placeholder="例如：小米"></label>
+      <label>出生日期（用于月龄提示）<input id="kidBirth" type="date"></label>
+    </div>
+    <div class="row"><button class="primary" id="saveKid">保存</button><button class="ghost" id="cancelKid">取消</button></div>
+  </div>
+
+  <section class="card" id="statusCard"></section>
+
+  <section class="card">
+    <div class="row" style="justify-content:space-between"><h2>体温曲线</h2>
+      <div class="tabs" role="tablist" id="range">
+        <button class="tab" data-h="24" role="tab">24小时</button>
+        <button class="tab" data-h="72" role="tab" aria-selected="true">3天</button>
+        <button class="tab" data-h="168" role="tab">7天</button>
+      </div></div>
+    <div class="chartbox"><svg id="chart" viewBox="0 0 600 240" width="100%" role="img" aria-label="体温曲线"></svg></div>
+    <div class="fine">● 体温　▲ 用药　虚线：37.5 / 38.5 / 39.5 ℃</div>
+  </section>
+
+  <section class="card">
+    <div class="tabs" role="tablist" id="entryTabs">
+      <button class="tab" data-k="temp" role="tab" aria-selected="true">🌡 体温</button>
+      <button class="tab" data-k="med" role="tab">💊 用药</button>
+      <button class="tab" data-k="sym" role="tab">症状/备注</button>
+    </div>
+
+    <div id="f-temp" class="row" style="flex-direction:column;align-items:stretch">
+      <div class="stepper" style="justify-content:center">
+        <button id="tMinus" aria-label="降低0.1度">−</button>
+        <output id="tVal">38.5℃</output>
+        <button id="tPlus" aria-label="升高0.1度">+</button>
+      </div>
+      <div class="tgrid" id="tInt" aria-label="整数位"></div>
+      <div class="tgrid dec" id="tDec" aria-label="小数位"></div>
+      <label class="fine" style="display:flex;flex-direction:column;gap:4px">或直接输入数字（如 385 = 38.5℃）
+        <input id="tType" inputmode="decimal" placeholder="385" autocomplete="off"></label>
+      <div class="row">
+        <label>测量部位<select id="site"><option>腋下</option><option>耳温</option><option>额温</option><option>口腔</option><option>肛温</option></select></label>
+      </div>
+    </div>
+
+    <div id="f-med" hidden>
+      <div class="row">
+        <label>药名<select id="medName">
+          <option>对乙酰氨基酚</option><option>布洛芬</option><option>其他</option></select></label>
+        <label id="medOtherWrap" hidden>其他药名<input id="medOther" placeholder="药名"></label>
+        <label>剂量<input id="dose" placeholder="例如 5ml / 1包"></label>
+      </div>
+    </div>
+
+    <div id="f-sym" hidden style="display:flex;flex-direction:column;gap:10px">
+      <div class="chips" id="symChips"></div>
+      <label class="fine" style="display:flex;flex-direction:column;gap:4px">备注（吃奶/喝水/尿量/精神状态等）<textarea id="note"></textarea></label>
+    </div>
+
+    <div class="timepick">
+      <div class="tp-head"><span class="fine">时间</span><b id="whenShow">现在</b></div>
+      <div class="chips" id="quickTime">
+        <button class="qt" data-m="0" aria-pressed="true">现在</button>
+        <button class="qt" data-m="5">5分钟前</button>
+        <button class="qt" data-m="15">15分钟前</button>
+        <button class="qt" data-m="30">半小时前</button>
+        <button class="qt" data-m="60">1小时前</button>
+        <button class="qt" data-m="-1">其他时间</button>
+      </div>
+      <div class="tp-fine" id="fineAdj" hidden>
+        <button class="adj" data-d="-30">−30分</button>
+        <button class="adj" data-d="-5">−5分</button>
+        <input id="when" type="datetime-local" aria-label="选择时间">
+        <button class="adj" data-d="5">+5分</button>
+        <button class="adj" data-d="30">+30分</button>
+      </div>
+    </div>
+    <button class="primary" id="saveEntry">记录体温</button>
+  </section>
+
+  <section class="card">
+    <div class="row" style="justify-content:space-between"><h2>记录明细</h2><button class="ghost" id="copyBtn">复制给医生的摘要</button></div>
+    <textarea id="summaryFallback" hidden readonly style="min-height:140px"></textarea>
+    <ul class="timeline" id="timeline"></ul>
+  </section>
+
+  <section class="card">
+    <h2>备份与换手机</h2>
+    <div class="fine">记录只保存在这台手机的浏览器里。换手机或清理浏览器前，先导出备份文件，再在新手机上导入。</div>
+    <div class="row"><button class="ghost" id="exportBtn">导出备份</button>
+      <label class="ghost" style="flex:0 0 auto;cursor:pointer;color:var(--ink);font-size:15px">导入备份<input type="file" id="importFile" accept=".json,application/json" hidden></label></div>
+    <div class="fine" id="installTip">加到主屏幕后像 App 一样使用：iPhone 用 Safari 点「分享」→「添加到主屏幕」；安卓用 Chrome 点菜单 →「添加到主屏幕/安装应用」。</div>
+  </section>
+
+  <section class="card">
+    <h2>需要尽快就医的情况</h2>
+    <ul style="margin:0;padding-left:18px;font-size:14px">
+      <li>3个月以下宝宝体温 ≥ 38℃</li>
+      <li>体温 ≥ 40℃，或退烧药后仍持续高烧</li>
+      <li>发烧超过 3 天（72小时）</li>
+      <li>抽搐、意识不清、精神很差叫不醒</li>
+      <li>呼吸急促/费力、嘴唇发紫</li>
+      <li>明显脱水：尿很少、哭时无泪、嘴唇干</li>
+      <li>按压不褪色的皮疹、颈部僵硬</li>
+    </ul>
+    <div class="fine">本工具只做记录，不替代医生判断。用药剂量与间隔请按说明书或医嘱。</div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const SYMS=["咳嗽","流鼻涕","喉咙痛","呕吐","腹泻","皮疹","精神差","食欲差","喝水少","尿少","寒战","手脚冰凉","抽搐","呼吸急促"];
+const MED_RULE={"对乙酰氨基酚":{gap:4,max:4},"布洛芬":{gap:6,max:4}};
+const LS="fever-log-v1";
+let state={kids:[],entries:[]}, cur=null, kind="temp", temp=38.5, rangeH=72, db=null, syms=new Set();
+
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem(LS)||"null");if(d)state=d;}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,1800);}
+const pad=n=>String(n).padStart(2,"0");
+const hm=t=>{const d=new Date(t);return pad(d.getHours())+":"+pad(d.getMinutes());};
+const md=t=>{const d=new Date(t);return (d.getMonth()+1)+"/"+d.getDate();};
+const localInput=t=>{const d=new Date(t);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());};
+function dur(ms){const m=Math.max(0,Math.round(ms/60000));const h=Math.floor(m/60);return h?(h+"小时"+(m%60?m%60+"分":"")):m+"分钟";}
+function tColor(v){return v>=39.5?"var(--vhot)":v>=38.5?"var(--hot)":v>=37.5?"var(--warm)":"var(--ok)";}
+function tLabel(v){return v>=39.5?"高烧":v>=38.5?"中度发热":v>=37.5?"低烧":"正常";}
+
+// ---------- storage ----------
+// Each tester's records are private: cloud = data/users/<id>/profile (+ entries), otherwise this device only.
+let me=null; // profile doc ref
+function goLocal(){db=null;me=null;$("#sync").textContent="保存在本机浏览器";}
+async function addEntry(e){
+  state.entries.push(e);render();
+  if(db){try{await me.collection("entries").doc(e.id).set(e);return;}catch(err){goLocal();}}
+  lsSave();
+}
+async function delEntry(id){
+  state.entries=state.entries.filter(x=>x.id!==id);render();
+  if(db){try{await me.collection("entries").doc(id).delete();return;}catch(err){goLocal();}}
+  lsSave();
+}
+async function saveKids(){
+  render();
+  if(db){try{await me.set({kids:state.kids});return;}catch(err){goLocal();}}
+  lsSave();
+}
+
+// ---------- derived ----------
+function kidEntries(){return state.entries.filter(e=>e.kid===cur).sort((a,b)=>a.t-b.t);}
+function episode(list){
+  const f=list.filter(e=>e.type==="temp"&&e.temp>=37.5);
+  if(!f.length)return null;
+  let start=f[0].t;
+  for(let i=1;i<f.length;i++) if(f[i].t-f[i-1].t>24*3600e3) start=f[i].t;
+  const inEp=f.filter(e=>e.t>=start);
+  const last=f[f.length-1];
+  const active=Date.now()-last.t<24*3600e3;
+  return {start,max:Math.max(...inEp.map(e=>e.temp)),active,last:last.t};
+}
+function kidAgeMonths(k){if(!k||!k.birth)return null;const b=new Date(k.birth),n=new Date();return (n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth()-(n.getDate()<b.getDate()?1:0);}
+
+// ---------- render ----------
+function renderKids(){
+  const box=$("#kids");box.innerHTML="";
+  state.kids.forEach(k=>{const b=document.createElement("button");b.className="pill";b.textContent=k.name;b.setAttribute("aria-pressed",k.id===cur);b.onclick=()=>{cur=k.id;try{localStorage.setItem(LS+"-cur",cur)}catch(e){};render();syncDefault();};box.appendChild(b);});
+  const a=document.createElement("button");a.className="pill";a.textContent="+ 孩子";a.onclick=()=>{$("#addKid").hidden=false;$("#kidName").focus();};box.appendChild(a);
+}
+function renderStatus(list){
+  const el=$("#statusCard");const temps=list.filter(e=>e.type==="temp");
+  const kid=state.kids.find(k=>k.id===cur);
+  if(!kid){el.innerHTML='<div class="empty">先点右上角「+ 孩子」添加一个孩子，再开始记录。</div>';return;}
+  if(!temps.length){el.innerHTML='<div class="empty">还没有体温记录。在下方输入第一次测量的体温。</div>';return;}
+  const last=temps[temps.length-1],ep=episode(list),now=Date.now();
+  const alerts=[];const age=kidAgeMonths(kid);
+  if(age!==null&&age<3&&last.temp>=38)alerts.push("3个月以下宝宝体温 ≥38℃，建议尽快就医");
+  if(last.temp>=40)alerts.push("体温已达 "+last.temp.toFixed(1)+"℃");
+  if(ep&&ep.active&&now-ep.start>=72*3600e3)alerts.push("本次发烧已持续超过 72 小时");
+  const recentSym=list.filter(e=>e.type==="sym"&&now-e.t<48*3600e3).flatMap(e=>e.syms||[]);
+  ["抽搐","呼吸急促","精神差","尿少"].forEach(s=>{if(recentSym.includes(s))alerts.push("近48小时出现「"+s+"」");});
+  // meds
+  const meds={};list.filter(e=>e.type==="med").forEach(e=>{(meds[e.med]=meds[e.med]||[]).push(e);});
+  const medHtml=Object.keys(meds).map(name=>{
+    const arr=meds[name],lm=arr[arr.length-1],rule=MED_RULE[name];
+    const c24=arr.filter(e=>now-e.t<24*3600e3).length;
+    let line='<span class="fine">上次 '+md(lm.t)+' '+hm(lm.t)+(lm.dose?' · '+esc(lm.dose):'')+'，已过 '+dur(now-lm.t)+'</span>';
+    if(rule){const next=lm.t+rule.gap*3600e3;
+      line+= next<=now?'<span class="when ready">现在可再次使用</span>':'<span class="when wait">最早 '+hm(next)+'（还需 '+dur(next-now)+'）</span>';
+      line+='<span class="fine">24小时内 '+c24+'/'+rule.max+' 次 · 间隔≥'+rule.gap+'小时</span>';}
+    else line+='<span class="fine">24小时内 '+c24+' 次</span>';
+    return '<div class="medbox"><b>'+esc(name)+'</b>'+line+'</div>';
+  }).join("");
+  el.innerHTML=
+   (alerts.length?'<div class="alert"><b>请注意</b><ul>'+alerts.map(a=>'<li>'+esc(a)+'</li>').join("")+'</ul></div>':'')+
+   '<div class="status"><div class="big" style="color:'+tColor(last.temp)+'">'+last.temp.toFixed(1)+'<small>℃</small></div>'+
+   '<div class="meta">'+
+     '<div><b><span class="badge" style="background:'+tColor(last.temp)+'">'+tLabel(last.temp)+'</span></b><span>'+esc(last.site||"")+' · '+hm(last.t)+'测</span></div>'+
+     '<div><b>'+dur(now-last.t)+'</b><span>距上次测量</span></div>'+
+     (ep&&ep.active?'<div><b>'+dur(now-ep.start)+'</b><span>本次发烧已持续</span></div><div><b>'+ep.max.toFixed(1)+'℃</b><span>本次最高</span></div>':'<div><b>—</b><span>目前无发热记录</span></div>')+
+   '</div></div>'+
+   (medHtml?'<h2>用药间隔</h2><div class="meds">'+medHtml+'</div><div class="fine">间隔按常见说明书，以医嘱为准。</div>':'');
+}
+function renderChart(list){
+  const svg=$("#chart");const W=600,H=240,L=40,R=12,T=12,B=40;
+  const now=Date.now();const temps=list.filter(e=>e.type==="temp");
+  let end=now;const start=end-rangeH*3600e3;
+  const lo=35.5,hi=41;const x=t=>L+(t-start)/(end-start)*(W-L-R);const y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  let s='';
+  [[37.5,"var(--warm)"],[38.5,"var(--hot)"],[39.5,"var(--vhot)"]].forEach(([v,c])=>{s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+c+'" stroke-dasharray="4 4" opacity=".6"/>';});
+  [36,37,38,39,40,41].forEach(v=>{s+='<text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'</text><line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width=".6"/>';});
+  // x ticks
+  const step=rangeH<=24?4:rangeH<=72?12:24;const d0=new Date(start);d0.setMinutes(0,0,0);
+  for(let t=d0.getTime();t<=end;t+=3600e3){const d=new Date(t);if(d.getHours()%step)continue;if(t<start)continue;
+    s+='<line x1="'+x(t)+'" x2="'+x(t)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--line)" stroke-width=".6"/>';
+    s+='<text x="'+x(t)+'" y="'+(H-B+14)+'" text-anchor="middle">'+(d.getHours()===0||step===24?md(t):pad(d.getHours())+':00')+'</text>';}
+  const vis=temps.filter(e=>e.t>=start&&e.t<=end);
+  if(vis.length>1){const pts=vis.map(e=>x(e.t)+","+y(Math.min(hi,Math.max(lo,e.temp)))).join(" ");
+    s+='<polygon points="'+x(vis[0].t)+','+(H-B)+' '+pts+' '+x(vis[vis.length-1].t)+','+(H-B)+'" fill="var(--hot)" opacity=".08"/>';
+    s+='<polyline points="'+pts+'" fill="none" stroke="var(--ink)" stroke-width="1.6" opacity=".55"/>';}
+  vis.forEach((e,i)=>{const cx=x(e.t),cy=y(Math.min(hi,Math.max(lo,e.temp)));s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(i===vis.length-1?5.5:4)+'" fill="'+tColor(e.temp)+'" stroke="var(--card)" stroke-width="1.5"><title>'+e.temp+'℃ '+hm(e.t)+'</title></circle>';});
+  list.filter(e=>e.type==="med"&&e.t>=start&&e.t<=end).forEach(e=>{const cx=x(e.t),cy=H-B+26;
+    s+='<path d="M'+cx+' '+(cy-7)+' L'+(cx+6)+' '+(cy+3)+' L'+(cx-6)+' '+(cy+3)+'Z" fill="var(--med)"><title>'+esc(e.med)+' '+hm(e.t)+'</title></path>';
+    s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--med)" stroke-width=".8" opacity=".4"/>';});
+  if(!vis.length)s+='<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle">这段时间没有体温记录</text>';
+  svg.innerHTML=s;
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function describe(e){
+  if(e.type==="temp")return '<b style="color:'+tColor(e.temp)+'">'+e.temp.toFixed(1)+'℃</b> <span class="fine">'+esc(e.site||"")+'</span>';
+  if(e.type==="med")return '<b style="color:var(--med)">'+esc(e.med)+'</b> '+esc(e.dose||"");
+  return (e.syms&&e.syms.length?'<b>'+e.syms.map(esc).join("、")+'</b> ':'')+esc(e.note||"");
+}
+function renderTimeline(list){
+  const ul=$("#timeline");ul.innerHTML="";
+  if(!list.length){ul.innerHTML='<li class="empty" style="display:block">暂无记录</li>';return;}
+  let lastDay="";
+  list.slice().reverse().forEach(e=>{
+    const day=md(e.t);if(day!==lastDay){const h=document.createElement("li");h.className="day";h.textContent=day;ul.appendChild(h);lastDay=day;}
+    const li=document.createElement("li");
+    const c=e.type==="temp"?tColor(e.temp):e.type==="med"?"var(--med)":"var(--mute)";
+    li.innerHTML='<span class="t">'+hm(e.t)+'</span><span class="dot" style="background:'+c+'"></span><span class="body">'+describe(e)+'</span>';
+    const del=document.createElement("button");del.className="del";del.textContent="删除";
+    del.onclick=()=>{const w=document.createElement("span");w.className="confirm";w.innerHTML='确认删除？';
+      const y=document.createElement("button");y.className="ghost";y.textContent="删除";y.onclick=()=>delEntry(e.id);
+      const n=document.createElement("button");n.className="ghost";n.textContent="取消";n.onclick=()=>render();
+      w.append(y,n);del.replaceWith(w);};
+    li.appendChild(del);ul.appendChild(li);
+  });
+}
+function render(){
+  if(!cur&&state.kids.length)cur=state.kids[0].id;
+  renderKids();const list=kidEntries();renderStatus(list);renderChart(list);renderTimeline(list);
+}
+
+// ---------- summary ----------
+function summary(){
+  const kid=state.kids.find(k=>k.id===cur);const list=kidEntries();const ep=episode(list);
+  let s=(kid?kid.name:"")+" 发烧记录\n";
+  const age=kidAgeMonths(kid);if(age!==null)s+="月龄："+age+"个月\n";
+  if(ep)s+="本次发烧开始："+md(ep.start)+" "+hm(ep.start)+"，最高 "+ep.max.toFixed(1)+"℃\n";
+  s+="\n";let lastDay="";
+  list.forEach(e=>{const d=md(e.t);if(d!==lastDay){s+="【"+d+"】\n";lastDay=d;}
+    s+=hm(e.t)+"  "+(e.type==="temp"?e.temp.toFixed(1)+"℃("+(e.site||"")+")":e.type==="med"?"用药："+e.med+" "+(e.dose||""):"症状："+[(e.syms||[]).join("、"),e.note].filter(Boolean).join(" / "))+"\n";});
+  return s;
+}
+$("#copyBtn").onclick=()=>{const s=summary();const ta=$("#summaryFallback");
+  const fb=()=>{ta.value=s;ta.hidden=false;ta.focus();ta.select();toast("已选中，请手动复制");};
+  try{navigator.clipboard.writeText(s).then(()=>{ta.hidden=true;toast("已复制");},fb);}catch(e){fb();}};
+
+// ---------- entry form ----------
+function setKind(k){kind=k;document.querySelectorAll("#entryTabs .tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.k===k));
+  $("#f-temp").hidden=k!=="temp";$("#f-med").hidden=k!=="med";$("#f-sym").hidden=k!=="sym";$("#f-sym").style.display=k==="sym"?"flex":"none";
+  $("#saveEntry").textContent=k==="temp"?"记录体温":k==="med"?"记录用药":"记录症状";}
+document.querySelectorAll("#entryTabs .tab").forEach(b=>b.onclick=()=>setKind(b.dataset.k));
+// Two taps to any reading: whole degree, then decimal. Defaults to the last reading.
+const INTS=[35,36,37,38,39,40], tInt=$("#tInt"), tDec=$("#tDec");
+INTS.forEach(n=>{const b=document.createElement("button");b.textContent=n;b.dataset.v=n;
+  b.onclick=()=>{temp=Math.round((n+(Math.round(temp*10)%10)/10)*10)/10;showT();};tInt.appendChild(b);});
+for(let d=0;d<10;d++){const b=document.createElement("button");b.textContent="."+d;b.dataset.v=d;
+  b.onclick=()=>{temp=Math.round((Math.floor(temp+1e-9)+d/10)*10)/10;showT();};tDec.appendChild(b);}
+$("#tType").addEventListener("input",ev=>{let s=ev.target.value.replace(/[^\d.]/g,"");if(!s)return;
+  let v=s.includes(".")?parseFloat(s):(s.length>=3?parseInt(s.slice(0,3))/10:NaN);
+  if(v>=34&&v<=43){temp=Math.round(v*10)/10;showT();}});
+$("#tType").addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();$("#saveEntry").click();}});
+function showT(){$("#tVal").textContent=temp.toFixed(1)+"℃";$("#tVal").style.color=tColor(temp);
+  const whole=Math.floor(temp+1e-9),dec=Math.round(temp*10)%10;
+  tInt.querySelectorAll("button").forEach(b=>{const on=+b.dataset.v===whole;b.setAttribute("aria-pressed",on);b.style.background=on?tColor(temp):"";});
+  tDec.querySelectorAll("button").forEach(b=>{const on=+b.dataset.v===dec;b.setAttribute("aria-pressed",on);b.style.background=on?tColor(temp):"";});}
+function syncDefault(){const t=kidEntries().filter(e=>e.type==="temp").pop();if(t){temp=t.temp;showT();}}
+$("#tMinus").onclick=()=>{temp=Math.max(34,Math.round((temp-0.1)*10)/10);showT();};
+$("#tPlus").onclick=()=>{temp=Math.min(43,Math.round((temp+0.1)*10)/10);showT();};
+$("#medName").onchange=()=>{$("#medOtherWrap").hidden=$("#medName").value!=="其他";};
+// ---- time picking: quick offsets for one-thumb use, fine adjust only when needed ----
+let offMin=0, custom=false;
+function getWhen(){if(custom&&$("#when").value)return new Date($("#when").value).getTime();return Date.now()-offMin*60000;}
+function showWhen(){const t=getWhen(),d=new Date(t),today=new Date();
+  const sameDay=d.toDateString()===today.toDateString();
+  const y=new Date(today);y.setDate(today.getDate()-1);
+  const dayLbl=sameDay?"今天":(d.toDateString()===y.toDateString()?"昨天":md(t));
+  $("#whenShow").textContent=(!custom&&offMin===0)?"现在 "+hm(t):dayLbl+" "+hm(t);}
+function pickQuick(m){
+  document.querySelectorAll("#quickTime .qt").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.m===m));
+  if(m===-1){custom=true;$("#fineAdj").hidden=false;$("#when").value=localInput(Date.now()-offMin*60000);}
+  else{custom=false;offMin=m;$("#fineAdj").hidden=true;}
+  showWhen();}
+document.querySelectorAll("#quickTime .qt").forEach(b=>b.onclick=()=>pickQuick(+b.dataset.m));
+document.querySelectorAll("#fineAdj .adj").forEach(b=>b.onclick=()=>{const t=Math.min(Date.now(),getWhen()+(+b.dataset.d)*60000);$("#when").value=localInput(t);showWhen();});
+$("#when").addEventListener("input",showWhen);
+setInterval(()=>{if(!custom)showWhen();},30000);
+const chips=$("#symChips");SYMS.forEach(s=>{const b=document.createElement("button");b.className="chip";b.textContent=s;b.setAttribute("aria-pressed","false");
+  b.onclick=()=>{syms.has(s)?syms.delete(s):syms.add(s);b.setAttribute("aria-pressed",syms.has(s));};chips.appendChild(b);});
+document.querySelectorAll("#range .tab").forEach(b=>b.onclick=()=>{rangeH=+b.dataset.h;document.querySelectorAll("#range .tab").forEach(x=>x.setAttribute("aria-selected",x===b));render();});
+
+$("#saveEntry").onclick=async()=>{
+  if(!cur){$("#addKid").hidden=false;toast("请先添加孩子");return;}
+  const t=getWhen();
+  const e={id:uid(),kid:cur,t,type:kind};
+  if(kind==="temp"){$("#tType").value="";e.temp=temp;e.site=$("#site").value;try{localStorage.setItem(LS+"-site",e.site)}catch(x){}}
+  else if(kind==="med"){e.med=$("#medName").value==="其他"?($("#medOther").value.trim()||"其他"):$("#medName").value;e.dose=$("#dose").value.trim();}
+  else{e.syms=[...syms];e.note=$("#note").value.trim();if(!e.syms.length&&!e.note){toast("请选择症状或填写备注");return;}}
+  await addEntry(e);toast("已记录 "+hm(t));
+  pickQuick(0);
+  if(kind==="sym"){syms.clear();chips.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));$("#note").value="";}
+};
+$("#saveKid").onclick=()=>{const n=$("#kidName").value.trim();if(!n){toast("请填写名字");return;}
+  const k={id:uid(),name:n,birth:$("#kidBirth").value||""};state.kids.push(k);cur=k.id;$("#addKid").hidden=true;$("#kidName").value="";$("#kidBirth").value="";saveKids();render();};
+$("#cancelKid").onclick=()=>{$("#addKid").hidden=true;};
+
+// ---------- boot ----------
+lsLoad();try{cur=localStorage.getItem(LS+"-cur");const st=localStorage.getItem(LS+"-site");if(st)$("#site").value=st;}catch(e){}
+if(cur&&!state.kids.some(k=>k.id===cur))cur=null;
+pickQuick(0);showT();setKind("temp");render();syncDefault();
+setInterval(()=>{const l=kidEntries();renderStatus(l);},60000);
+
+// ---------- backup ----------
+$("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,1)],{type:"application/json"});
+  const a=document.createElement("a");const d=new Date();a.href=URL.createObjectURL(blob);
+  a.download="退烧记录备份_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";document.body.appendChild(a);a.click();a.remove();toast("已导出");};
+$("#importFile").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.kids)||!Array.isArray(d.entries))throw 0;
+    const ids=new Set(state.entries.map(e=>e.id));d.entries.forEach(e=>{if(!ids.has(e.id))state.entries.push(e);});
+    const kids=new Set(state.kids.map(k=>k.id));d.kids.forEach(k=>{if(!kids.has(k.id))state.kids.push(k);});
+    lsSave();render();toast("已导入 "+d.entries.length+" 条");}catch(e){toast("文件格式不对，请选择导出的备份文件");}};
+  r.readAsText(f);ev.target.value="";};
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
+})();
+</script>
+
+</body></html>
